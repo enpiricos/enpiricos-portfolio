@@ -40,6 +40,13 @@ alter table public.admin_users enable row level security;
 alter table public.projects enable row level security;
 alter table public.site_profile enable row level security;
 
+grant usage on schema public to anon, authenticated;
+grant select on public.admin_users to authenticated;
+grant select on public.projects to anon, authenticated;
+grant insert, update, delete on public.projects to authenticated;
+grant select on public.site_profile to anon, authenticated;
+grant insert, update, delete on public.site_profile to authenticated;
+
 create policy "admins can read their authorization" on public.admin_users for select to authenticated using (user_id = auth.uid());
 create policy "published projects are public" on public.projects for select to anon, authenticated using (is_published = true);
 create policy "admins can manage projects" on public.projects for all to authenticated using (exists (select 1 from public.admin_users where user_id = auth.uid())) with check (exists (select 1 from public.admin_users where user_id = auth.uid()));
