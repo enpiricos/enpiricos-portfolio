@@ -6,7 +6,7 @@ import AdminApp from "./admin";
 import { supabase } from "./lib/supabase";
 
 type Project = { number: string; title: string; eyebrow: string; description: string; stack: string; href: string; tone: "blue" | "black" | "white" };
-type Profile = { full_name: string; role: string; bio: string; contact_email: string; phone: string; address: string; cnpj: string; github_url: string; linkedin_url: string; instagram_url: string; avatar_url: string; hero_kicker: string; hero_title: string; hero_lede: string; about_title: string; about_text_one: string; about_text_two: string; process_title: string; process_text: string; contact_title: string; contact_text: string };
+type Profile = { full_name: string; role: string; bio: string; contact_email: string; phone: string; address: string; cnpj: string; website: string; github_url: string; linkedin_url: string; instagram_url: string; youtube_url: string; whatsapp_url: string; avatar_url: string; hero_kicker: string; hero_title: string; hero_lede: string; about_title: string; about_text_one: string; about_text_two: string; process_title: string; process_text: string; contact_title: string; contact_text: string };
 type Tool = { id: string; name: string; category: string; icon: string; sort_order: number };
 
 const fallbackProjects: Project[] = [
@@ -16,7 +16,7 @@ const fallbackProjects: Project[] = [
 ];
 
 const fallbackProfile: Profile = {
-  full_name: "Eliseu Rodrigues Guimarães Costa", role: "Engenheiro de software", bio: "", contact_email: "eliseu.guimaraes@rizzonet.com.br", phone: "", address: "", cnpj: "", github_url: "https://github.com/enpiricos", linkedin_url: "", instagram_url: "", avatar_url: "", hero_kicker: "Engenheiro de software · Rio de Janeiro", hero_title: "Ideias fortes merecem tecnologia.", hero_lede: "Eu construo produtos digitais que conectam estratégia, engenharia e pessoas.", about_title: "Engenharia com visão de produto.", about_text_one: "Sou Eliseu, engenheiro de software. Trabalho na interseção entre tecnologia, produto e pessoas para transformar problemas complexos em experiências simples.", about_text_two: "Do primeiro esboço ao deploy, penso em sistemas que fazem sentido para quem usa e para quem mantém. Código é ferramenta; impacto é o objetivo.", process_title: "Clareza antes do código.", process_text: "Um processo simples para transformar problemas complexos em produtos que funcionam.", contact_title: "Tem uma ideia? Vamos tirar do papel.", contact_text: "Conte o que você está construindo e vamos pensar juntos nos próximos passos.",
+  full_name: "Eliseu Rodrigues Guimarães Costa", role: "Engenheiro de software", bio: "", contact_email: "eliseu.guimaraes@rizzonet.com.br", phone: "", address: "", cnpj: "", website: "", github_url: "https://github.com/enpiricos", linkedin_url: "", instagram_url: "", youtube_url: "", whatsapp_url: "", avatar_url: "", hero_kicker: "Engenheiro de software · Rio de Janeiro", hero_title: "Ideias fortes merecem tecnologia.", hero_lede: "Eu construo produtos digitais que conectam estratégia, engenharia e pessoas.", about_title: "Engenharia com visão de produto.", about_text_one: "Sou Eliseu, engenheiro de software. Trabalho na interseção entre tecnologia, produto e pessoas para transformar problemas complexos em experiências simples.", about_text_two: "Do primeiro esboço ao deploy, penso em sistemas que fazem sentido para quem usa e para quem mantém. Código é ferramenta; impacto é o objetivo.", process_title: "Clareza antes do código.", process_text: "Um processo simples para transformar problemas complexos em produtos que funcionam.", contact_title: "Tem uma ideia? Vamos tirar do papel.", contact_text: "Conte o que você está construindo e vamos pensar juntos nos próximos passos.",
 };
 
 function App() {
@@ -29,11 +29,16 @@ function App() {
   useEffect(() => {
     if (!supabase) return;
     Promise.all([
-      supabase.from("site_profile").select("*").eq("id", "main").maybeSingle(),
+      supabase.from("company_profile").select("*").eq("id", "main").maybeSingle(),
+      supabase.from("developer_profile").select("*").eq("id", "main").maybeSingle(),
+      supabase.from("site_content").select("*").eq("id", "main").maybeSingle(),
       supabase.from("projects").select("title, eyebrow, description, stack, href, tone, sort_order").eq("is_published", true).order("sort_order", { ascending: true }),
       supabase.from("tools").select("id, name, category, icon, sort_order").eq("is_published", true).order("sort_order", { ascending: true }),
-    ]).then(([profileResult, projectResult, toolsResult]) => {
-      if (profileResult.data) setProfile({ ...fallbackProfile, ...profileResult.data });
+    ]).then(([companyResult, developerResult, contentResult, projectResult, toolsResult]) => {
+      const company = companyResult.data ?? {};
+      const developer = developerResult.data ?? {};
+      const content = contentResult.data ?? {};
+      if (companyResult.data || developerResult.data || contentResult.data) setProfile({ ...fallbackProfile, ...developer, ...content, contact_email: company.contact_email || developer.contact_email || fallbackProfile.contact_email, phone: company.phone || developer.phone || "", address: [company.address, company.city, company.state, company.zip_code].filter(Boolean).join(" · "), cnpj: company.cnpj || "", website: company.website || "", github_url: developer.github_url || "", linkedin_url: company.linkedin_url || developer.linkedin_url || "", instagram_url: company.instagram_url || developer.instagram_url || "", youtube_url: company.youtube_url || "", whatsapp_url: company.whatsapp_url || "" });
       if (projectResult.data?.length) setProjects(projectResult.data.map((item, index) => ({ ...item, number: String(index + 1).padStart(2, "0") })) as Project[]);
       if (toolsResult.data) setTools(toolsResult.data as Tool[]);
     });
@@ -43,6 +48,8 @@ function App() {
     profile.github_url && { href: profile.github_url, label: "GitHub", icon: <Code2 size={18} /> },
     profile.linkedin_url && { href: profile.linkedin_url, label: "LinkedIn", icon: <BriefcaseBusiness size={18} /> },
     profile.instagram_url && { href: profile.instagram_url, label: "Instagram", icon: <span className="social-letter">ig</span> },
+    profile.youtube_url && { href: profile.youtube_url, label: "YouTube", icon: <span className="social-letter">yt</span> },
+    profile.whatsapp_url && { href: profile.whatsapp_url, label: "WhatsApp", icon: <span className="social-letter">wa</span> },
     profile.contact_email && { href: `mailto:${profile.contact_email}`, label: "E-mail", icon: <Mail size={18} /> },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
