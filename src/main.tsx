@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useEffect, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, BriefcaseBusiness, Check, Code2, Mail, Menu, X } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, Check, Code2, Mail, Menu, MessageCircle, Play, X } from "lucide-react";
 import "./styles.css";
 import AdminApp from "./admin";
 import { supabase } from "./lib/supabase";
@@ -47,10 +47,10 @@ function App() {
   const socials = [
     profile.github_url && { href: profile.github_url, label: "GitHub", icon: <Code2 size={18} /> },
     profile.linkedin_url && { href: profile.linkedin_url, label: "LinkedIn", icon: <BriefcaseBusiness size={18} /> },
-    profile.instagram_url && { href: profile.instagram_url, label: "Instagram", icon: <span className="social-letter">ig</span> },
-    profile.youtube_url && { href: profile.youtube_url, label: "YouTube", icon: <span className="social-letter">yt</span> },
-    profile.whatsapp_url && { href: profile.whatsapp_url, label: "WhatsApp", icon: <span className="social-letter">wa</span> },
-    profile.contact_email && { href: `mailto:${profile.contact_email}`, label: "E-mail", icon: <Mail size={18} /> },
+    profile.instagram_url && { href: profile.instagram_url, label: "Instagram", icon: <Camera size={18} /> },
+    profile.youtube_url && { href: profile.youtube_url, label: "YouTube", icon: <Play size={18} /> },
+    profile.whatsapp_url && { href: profile.whatsapp_url, label: "WhatsApp", icon: <MessageCircle size={18} /> },
+    profile.contact_email && { href: `mailto:${profile.contact_email}`, label: "E-mail", icon: <AtSign size={18} /> },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
   return <div className="site-shell">

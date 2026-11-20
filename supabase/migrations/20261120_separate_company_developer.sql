@@ -81,3 +81,5 @@ values ('main', 'Engenheiro de software · Rio de Janeiro', 'Ideias fortes merec
 update public.developer_profile d set full_name = p.full_name, role = p.role, bio = p.bio, contact_email = p.contact_email, phone = p.phone, avatar_url = p.avatar_url, github_url = p.github_url, linkedin_url = p.linkedin_url, instagram_url = p.instagram_url from public.site_profile p where p.id = 'main' and d.id = 'main';
 update public.company_profile c set cnpj = p.cnpj, address = p.address, contact_email = case when p.contact_email like '%@rizzonet%' then c.contact_email else p.contact_email end, phone = p.phone from public.site_profile p where p.id = 'main' and c.id = 'main';
 update public.site_content s set hero_kicker = p.hero_kicker, hero_title = p.hero_title, hero_lede = p.hero_lede, about_title = p.about_title, about_text_one = p.about_text_one, about_text_two = p.about_text_two, process_title = p.process_title, process_text = p.process_text, contact_title = p.contact_title, contact_text = p.contact_text from public.site_profile p where p.id = 'main' and s.id = 'main';
+
+notify pgrst, 'reload schema';
