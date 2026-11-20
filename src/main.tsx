@@ -41,7 +41,7 @@ function App() {
       const company = companyResult.data ?? {};
       const developer = developerResult.data ?? {};
       const content = contentResult.data ?? {};
-      if (companyResult.data || developerResult.data || contentResult.data) setProfile({ ...fallbackProfile, ...developer, ...content, contact_email: company.contact_email || developer.contact_email || fallbackProfile.contact_email, phone: company.phone || developer.phone || "", address: [company.address, company.city, company.state, company.zip_code].filter(Boolean).join(" · "), city: company.city || "", state: company.state || "", cnpj: company.cnpj || "", website: company.website || "", github_url: developer.github_url || "", linkedin_url: company.linkedin_url || developer.linkedin_url || "", instagram_url: company.instagram_url || developer.instagram_url || "", youtube_url: company.youtube_url || "", whatsapp_url: company.whatsapp_url || "" });
+      if (companyResult.data || developerResult.data || contentResult.data) setProfile({ ...fallbackProfile, ...developer, ...content, contact_email: developer.contact_email || fallbackProfile.contact_email, phone: "", address: "", city: "", state: company.state || "", cnpj: company.cnpj || "", website: "", github_url: developer.github_url || "", linkedin_url: company.linkedin_url || developer.linkedin_url || "", instagram_url: company.instagram_url || developer.instagram_url || "", youtube_url: company.youtube_url || "", whatsapp_url: company.whatsapp_url || "" });
       if (projectResult.data?.length) setProjects(projectResult.data.map((item, index) => ({ ...item, number: String(index + 1).padStart(2, "0") })) as Project[]);
       if (toolsResult.data) setTools(toolsResult.data as Tool[]);
     });
