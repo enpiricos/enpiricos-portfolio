@@ -12,6 +12,7 @@
     "@icons-pack/react-simple-icons": "^13.15.1",
     "@supabase/supabase-js": "^2.119.2",
     "@vitejs/plugin-react": "latest",
+    "lucide": "^1.77.0",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
