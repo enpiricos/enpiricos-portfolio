@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -11,6 +11,8 @@ import {
   X,
 } from "lucide-react";
 import "./styles.css";
+import AdminApp from "./admin";
+import { supabase } from "./lib/supabase";
 
 const projects = [
   { number: "01", title: "ItaZoo", eyebrow: "Patrimônio & ciência", description: "Portal científico e repositório paleontológico 3D da Bacia de São José de Itaboraí.", stack: "React · TanStack Start · Three.js", href: "https://itazoo.enpiricos.com.br", tone: "blue" },
@@ -20,7 +22,14 @@ const projects = [
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [visibleProjects, setVisibleProjects] = useState(projects);
   const closeMenu = () => setMenuOpen(false);
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.from("projects").select("title, eyebrow, description, stack, href, tone, sort_order").eq("is_published", true).order("sort_order", { ascending: true }).then(({ data }) => {
+      if (data?.length) setVisibleProjects(data.map((item, index) => ({ ...item, number: String(index + 1).padStart(2, "0") })) as typeof projects);
+    });
+  }, []);
 
   return (
     <div className="site-shell">
@@ -43,7 +52,7 @@ function App() {
 
         <section id="sobre" className="about page-section"><div className="section-kicker">/ 01 — sobre</div><div className="about-content"><h2>Engenharia com<br /><span>visão de produto.</span></h2><div className="about-body"><p>Sou Eliseu, engenheiro de software. Trabalho na interseção entre tecnologia, produto e pessoas para transformar problemas complexos em experiências simples.</p><p>Do primeiro esboço ao deploy, penso em sistemas que fazem sentido para quem usa e para quem mantém. Código é ferramenta; impacto é o objetivo.</p></div><div className="skill-list"><span><Check size={15} /> Produto digital</span><span><Check size={15} /> Arquitetura</span><span><Check size={15} /> Experiências web</span></div></div></section>
 
-        <section id="projetos" className="projects page-section"><div className="section-kicker">/ 02 — projetos</div><div className="projects-content"><div className="section-intro"><h2>Feito para<br /><span>funcionar.</span></h2><p>Alguns projetos que mostram como penso, construo e entrego.</p></div><div className="project-list">{projects.map((project) => <a className={`project-card ${project.tone}`} href={project.href} key={project.number} target={project.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"><div className="project-top"><span>{project.number}</span><span>{project.eyebrow}</span></div><div className="project-title"><h3>{project.title}</h3><ArrowUpRight size={26} /></div><p>{project.description}</p><span className="project-stack">{project.stack}</span></a>)}</div></div></section>
+        <section id="projetos" className="projects page-section"><div className="section-kicker">/ 02 — projetos</div><div className="projects-content"><div className="section-intro"><h2>Feito para<br /><span>funcionar.</span></h2><p>Alguns projetos que mostram como penso, construo e entrego.</p></div><div className="project-list">{visibleProjects.map((project) => <a className={`project-card ${project.tone}`} href={project.href} key={project.number} target={project.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"><div className="project-top"><span>{project.number}</span><span>{project.eyebrow}</span></div><div className="project-title"><h3>{project.title}</h3><ArrowUpRight size={26} /></div><p>{project.description}</p><span className="project-stack">{project.stack}</span></a>)}</div></div></section>
 
         <section id="processo" className="process page-section"><div className="section-kicker">/ 03 — processo</div><div className="process-content"><h2>Clareza antes<br /><span>do código.</span></h2><div className="process-steps"><div><b>01</b><h3>Entender</h3><p>O problema, o contexto e as pessoas envolvidas.</p></div><div><b>02</b><h3>Construir</h3><p>Uma solução sólida, bonita e possível de evoluir.</p></div><div><b>03</b><h3>Entregar</h3><p>Produto no mundo, aprendendo com quem usa.</p></div></div></div></section>
 
@@ -55,4 +64,6 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+if (window.location.pathname === "/admin") root.render(<AdminApp />);
+else root.render(<App />);
