@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import { useEffect, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, AtSign, BriefcaseBusiness, Braces, Camera, Check, Cloud, Code2, Cpu, Database, GitBranch, Globe, Layers, LayoutDashboard, Mail, Menu, MessageCircle, Monitor, Play, Server, ShieldCheck, Smartphone, Terminal, Wrench, Workflow, X } from "lucide-react";
 import { siDocker, siFigma, siGit, siNodedotjs, siPostgresql, siReact, siSupabase, siTypescript, siVite } from "simple-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub, faInstagram, faLinkedin, faWhatsapp, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import "./styles.css";
 import AdminApp from "./admin";
 import { supabase } from "./lib/supabase";
@@ -48,18 +50,18 @@ function App() {
   }, []);
 
   const socials = [
-    profile.github_url && { href: profile.github_url, label: "GitHub", icon: <Code2 size={18} /> },
-    profile.linkedin_url && { href: profile.linkedin_url, label: "LinkedIn", icon: <BriefcaseBusiness size={18} /> },
-    profile.instagram_url && { href: profile.instagram_url, label: "Instagram", icon: <Camera size={18} /> },
-    profile.youtube_url && { href: profile.youtube_url, label: "YouTube", icon: <Play size={18} /> },
-    profile.whatsapp_url && { href: profile.whatsapp_url, label: "WhatsApp", icon: <MessageCircle size={18} /> },
+    profile.github_url && { href: profile.github_url, label: "GitHub", icon: <FontAwesomeIcon icon={faGithub} /> },
+    profile.linkedin_url && { href: profile.linkedin_url, label: "LinkedIn", icon: <FontAwesomeIcon icon={faLinkedin} /> },
+    profile.instagram_url && { href: profile.instagram_url, label: "Instagram", icon: <FontAwesomeIcon icon={faInstagram} /> },
+    profile.youtube_url && { href: profile.youtube_url, label: "YouTube", icon: <FontAwesomeIcon icon={faYoutube} /> },
+    profile.whatsapp_url && { href: profile.whatsapp_url, label: "WhatsApp", icon: <FontAwesomeIcon icon={faWhatsapp} /> },
     profile.contact_email && { href: `mailto:${profile.contact_email}`, label: "E-mail", icon: <AtSign size={18} /> },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
   return <div className="site-shell">
     <header className="topbar"><a className="brand" href="#top" aria-label="Enpiricos — início"><img src="/brand/enpiricos-logo.svg" alt="enpiricos" /></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">{menuOpen ? <X size={22} /> : <Menu size={22} />}</button><nav className={menuOpen ? "nav-links open" : "nav-links"}><a href="#sobre" onClick={closeMenu}>Sobre</a><a href="#projetos" onClick={closeMenu}>Projetos</a><a href="#processo" onClick={closeMenu}>Processo</a><a className="nav-cta" href="#contato" onClick={closeMenu}>Vamos conversar <ArrowUpRight size={16} /></a></nav></header>
     <main id="top">
-      <section className="hero"><div className="hero-copy"><p className="eyebrow"><span className="pulse" /> {profile.hero_kicker}</p><h1>{profile.hero_title.split(" ").slice(0, 2).join(" ")}<br /><span>{profile.hero_title.split(" ").slice(2, 4).join(" ")}</span><br />{profile.hero_title.split(" ").slice(4).join(" ")}</h1><p className="hero-lede">{profile.hero_lede}</p><div className="hero-actions"><a className="button button-blue" href="#projetos">Conheça meus projetos <ArrowUpRight size={17} /></a><a className="quiet-link" href="#sobre">Sobre mim <ArrowDownRight size={17} /></a></div></div><div className="hero-panel" aria-label="Enpiricos — tecnologia com propósito"><img src="/brand/enpiricos-logo-branca.svg" alt="enpiricos" className="hero-logo" /><div className="panel-grid" /><div className="panel-symbol"><img src="/brand/enpiricos-simbolo.svg" alt="" /></div><div className="panel-caption"><span>01</span><span>ideia → impacto</span></div></div></section>
+      <section className="hero"><div className="hero-copy">{profile.hero_kicker && !profile.hero_kicker.startsWith("Engenheiro de software") && <p className="eyebrow"><span className="pulse" /> {profile.hero_kicker}</p>}<h1>{profile.hero_title.split(" ").slice(0, 2).join(" ")}<br /><span>{profile.hero_title.split(" ").slice(2, 4).join(" ")}</span><br />{profile.hero_title.split(" ").slice(4).join(" ")}</h1><p className="hero-lede">{profile.hero_lede}</p><div className="hero-actions"><a className="button button-blue" href="#projetos">Conheça meus projetos <ArrowUpRight size={17} /></a><a className="quiet-link" href="#sobre">Sobre mim <ArrowDownRight size={17} /></a></div></div><div className="hero-panel" aria-label="Enpiricos — tecnologia com propósito"><img src="/brand/enpiricos-logo-branca.svg" alt="enpiricos" className="hero-logo" /><div className="panel-grid" /><div className="panel-symbol"><img src="/brand/enpiricos-simbolo.svg" alt="" /></div><div className="panel-caption"><span>01</span><span>ideia → impacto</span></div></div></section>
       <div className="brand-line"><span>enpiricos</span><span className="line" /><span>software com propósito</span><span className="brand-dot">✳</span><span>tecnologia que resolve</span></div>
       {tools.length > 0 && <div className="tools-marquee"><div className="tools-track">{[...tools, ...tools].map((tool, index) => { const Icon = iconLibrary[tool.icon_name as keyof typeof iconLibrary] || Code2; const brand = brandIconLibrary[tool.icon_name as keyof typeof brandIconLibrary]; return <span key={`${tool.id}-${index}`}>{tool.icon_url ? <img src={tool.icon_url} alt="" /> : brand ? <b className="brand-tool-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill={`#${brand.hex}`} d={brand.path} /></svg></b> : <b><Icon size={14} /></b>}{tool.name}</span>; })}</div></div>}
       <section id="sobre" className="about page-section"><div className="section-kicker">/ 01 — sobre</div><div className="about-content"><div className="about-profile-card"><div className="about-portrait">{profile.avatar_url ? <img src={profile.avatar_url} alt={profile.full_name} /> : <img src="/brand/enpiricos-simbolo.svg" alt="Enpiricos" />}</div><div><strong>{profile.full_name}</strong><span>{profile.role}</span></div></div><h2>{profile.about_title.split(" ").slice(0, 2).join(" ")}<br /><span>{profile.about_title.split(" ").slice(2).join(" ")}</span></h2><div className="about-body"><p>{profile.about_text_one}</p><p>{profile.about_text_two}</p></div><div className="skill-list"><span><Check size={15} /> Produto digital</span><span><Check size={15} /> Arquitetura</span><span><Check size={15} /> Experiências web</span></div></div></section>
