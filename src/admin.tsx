@@ -49,8 +49,17 @@ function AdminApp() {
     event.preventDefault(); setError("");
     if (!supabase) return;
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) { setError(authError.message); return; }
+    if (authError) { setError(readableAuthError(authError)); return; }
     if (data.session) await verifyAdmin(data.session.user.id);
+  }
+
+  function readableAuthError(authError: { code?: string; message?: string }) {
+    if (authError.code === "invalid_credentials" || authError.message?.toLowerCase().includes("invalid login credentials")) {
+      return "E-mail ou senha incorretos. Confirme também se este usuário foi criado no mesmo projeto Supabase configurado na Vercel.";
+    }
+    if (authError.message?.toLowerCase().includes("email not confirmed")) return "Confirme seu e-mail no Supabase antes de entrar.";
+    if (authError.message?.toLowerCase().includes("rate limit")) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+    return "Não foi possível entrar agora. Verifique os dados e tente novamente.";
   }
 
   async function loadData() {
